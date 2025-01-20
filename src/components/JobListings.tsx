@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import JobListing from "./JobListing";
+import Spinner from "./Spinner";
 
 type Job = {
   id: string;
@@ -36,11 +37,15 @@ const JobListings = ({ isHome = false }) => {
         <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">
           {isHome ? "Featured Jobs" : "All Jobs"}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {jobs.map((job) => (
-            <JobListing key={job.id} job={job} />
-          ))}
-        </div>
+        {loading ? (
+          <Spinner loading={loading} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {jobs.map((job) => (
+              <JobListing key={job.id} job={job} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
