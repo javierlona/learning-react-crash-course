@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { FaMapMarker } from "react-icons/fa";
 import { Link } from "react-router-dom";
-
-type Job = {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  salary: string;
-  location: string;
-};
+import { Job } from "../types/Job";
 
 const JobListing: React.FC<{ job: Job }> = ({ job }) => {
   const [showFullDescription, setShowFullDescription] = useState(false);

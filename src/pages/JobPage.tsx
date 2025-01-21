@@ -3,10 +3,11 @@ import {
   LoaderFunctionArgs,
   LoaderFunction,
 } from "react-router-dom";
+import { Job } from "../types/Job";
 
 const JobPage = () => {
-  const job = useLoaderData<{ title: string }>();
-  return <div>{job.title}</div>;
+  const job = useLoaderData<Job>();
+  return <div>{job.description}</div>;
 };
 
 const jobLoader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {

@@ -1,15 +1,7 @@
 import { useEffect, useState } from "react";
 import JobListing from "./JobListing";
 import Spinner from "./Spinner";
-
-type Job = {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  salary: string;
-  location: string;
-};
+import { Job } from "../types/Job";
 
 const JobListings = ({ isHome = false }) => {
   const [jobs, setJobs] = useState<Job[]>([]);
