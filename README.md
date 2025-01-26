@@ -48,3 +48,18 @@ export default tseslint.config({
   },
 })
 ```
+## Getting Started
+
+### Prerequisites
+
+### Installing
+```
+npm install
+npm run server
+npm run dev
+```
+
+## Built With
+* React
+* JSON Server
+* Tailwind CSS
