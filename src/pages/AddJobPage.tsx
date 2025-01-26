@@ -2,6 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { Job } from "../types/Job";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 
 const AddJobPage = () => {
   const [job, setJob] = useState<Job>({
@@ -47,8 +48,10 @@ const AddJobPage = () => {
       });
 
       if (response.ok) {
+        toast.success("Job added successfully");
         navigate("/jobs");
       } else {
+        toast.error("Failed to add job");
         console.error("Failed to add job");
       }
     } catch (error) {

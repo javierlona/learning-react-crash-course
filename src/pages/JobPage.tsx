@@ -7,6 +7,7 @@ import {
 import { Job } from "../types/Job";
 import { FaArrowLeft, FaMapMarker } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 type JobPageProps = {
   deleteJobId: (id: string) => Promise<void>;
@@ -19,6 +20,7 @@ const JobPage: React.FC<JobPageProps> = ({ deleteJobId }) => {
   const onDeleteClick = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this job?")) {
       deleteJobId(id);
+      toast.success("Job deleted successfully");
       navigate("/jobs");
     }
   };
