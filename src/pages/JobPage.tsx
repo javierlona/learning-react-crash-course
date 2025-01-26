@@ -8,13 +8,17 @@ import { Job } from "../types/Job";
 import { FaArrowLeft, FaMapMarker } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const JobPage = ({ deleteJob }) => {
+type JobPageProps = {
+  deleteJobId: (id: string) => Promise<void>;
+};
+
+const JobPage: React.FC<JobPageProps> = ({ deleteJobId }) => {
   const navigate = useNavigate();
   const job = useLoaderData<Job>();
 
   const onDeleteClick = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this job?")) {
-      deleteJob(id);
+      deleteJobId(id);
       navigate("/jobs");
     }
   };

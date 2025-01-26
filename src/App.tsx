@@ -11,7 +11,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import JobPage, { jobLoader } from "./pages/JobPage";
 import AddJobPage from "./pages/AddJobPage";
 
-const deleteJob = async (id: string) => {
+const deleteJobFn = async (id: string) => {
   console.log("Deleting job with ID:", id);
   try {
     const response = await fetch(`/api/jobs/${id}`, {
@@ -36,7 +36,7 @@ const router = createBrowserRouter(
       <Route path="/add-job" element={<AddJobPage />} />
       <Route
         path="/jobs/:id"
-        element={<JobPage deleteJob={deleteJob} />}
+        element={<JobPage deleteJobId={deleteJobFn} />}
         loader={jobLoader}
       />
       <Route path="*" element={<NotFoundPage />} />
