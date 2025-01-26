@@ -3,7 +3,7 @@ import { Job } from "../types/Job";
 
 const AddJobPage = () => {
   const [job, setJob] = useState<Job>({
-    id: "",
+    id: uuidv4(), // Generate a unique ID for the job
     type: "",
     title: "",
     description: "",
@@ -17,10 +17,13 @@ const AddJobPage = () => {
     },
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setJob((prevJob) => ({
       ...prevJob,
       [name]: value,
@@ -31,6 +34,24 @@ const AddJobPage = () => {
     e.preventDefault();
 
     console.log(job);
+
+    try {
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(job),
+      });
+
+      if (response.ok) {
+        navigate("/jobs");
+      } else {
+        console.error("Failed to add job");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
