@@ -114,7 +114,12 @@ const JobPage: React.FC<JobPageProps> = ({ deleteJobId }) => {
 
 const jobLoader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
   const response = await fetch(`/api/jobs/${params.id}`);
-  const data = await response.json();
+  if (!response.ok) {
+    throw new Error("Failed to fetch job");
+  }
+  console.log("Success fetching job");
+  const data: Job = await response.json();
+  console.log("Job data:", data);
   return data;
 };
 
