@@ -1,8 +1,18 @@
-import { ChangeEvent, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Job } from "../types/Job";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
+
+type HandleChangeArgs =
+  | {
+      fieldName: keyof Omit<Job, "company">;
+      value: string;
+      isCompanyField?: false;
+    }
+  | { fieldName: keyof Job["company"]; value: string; isCompanyField: true };
+
+type HandleChange = (args: HandleChangeArgs) => void;
 
 const AddJobPage = () => {
   const [job, setJob] = useState<Job>({
@@ -22,48 +32,59 @@ const AddJobPage = () => {
 
   const navigate = useNavigate();
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-    setJob((prevJob) => ({
-      ...prevJob,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    console.log(job);
-
-    try {
-      const response = await fetch("/api/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(job),
+  const handleChange = useCallback<HandleChange>(
+    ({ fieldName, value, isCompanyField }) => {
+      console.log(fieldName, value);
+      setJob((prevJob) => {
+        const updatedJob: Job = { ...prevJob, company: { ...prevJob.company } };
+        if (isCompanyField) {
+          updatedJob.company[fieldName] = value;
+        } else {
+          updatedJob[fieldName] = value;
+        }
+        return updatedJob;
       });
+    },
+    []
+  );
 
-      if (response.ok) {
-        toast.success("Job added successfully");
-        navigate("/jobs");
-      } else {
-        toast.error("Failed to add job");
-        console.error("Failed to add job");
+  const handleSubmit = useCallback(
+    async (job: Job) => {
+      try {
+        const response = await fetch("/api/jobs", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(job),
+        });
+
+        if (response.ok) {
+          toast.success("Job added successfully");
+          navigate("/jobs");
+        } else {
+          toast.error("Failed to add job");
+          console.error("Failed to add job");
+        }
+      } catch (error) {
+        console.error("Error:", error);
       }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+    },
+    [navigate]
+  );
+  useEffect(() => {
+    console.log(Date.now());
+  }, [navigate]);
 
   return (
     <section className="bg-indigo-50">
       <div className="container m-auto max-w-2xl py-24">
         <div className="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={() => {
+              handleSubmit(job);
+            }}
+          >
             <h2 className="text-3xl text-center font-semibold mb-6">Add Job</h2>
 
             <div className="mb-4">
@@ -75,11 +96,12 @@ const AddJobPage = () => {
               </label>
               <select
                 id="type"
-                name="type"
                 className="border rounded w-full py-2 px-3"
                 required
                 value={job.type}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({ fieldName: "type", value: e.target.value });
+                }}
               >
                 <option value="Full-Time">Full-Time</option>
                 <option value="Part-Time">Part-Time</option>
@@ -95,12 +117,13 @@ const AddJobPage = () => {
               <input
                 type="text"
                 id="title"
-                name="title"
                 className="border rounded w-full py-2 px-3 mb-2"
-                placeholder="eg. Beautiful Apartment In Miami"
+                placeholder="Give your job listing a name"
                 required
                 value={job.title}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({ fieldName: "title", value: e.target.value });
+                }}
               />
             </div>
             <div className="mb-4">
@@ -112,12 +135,16 @@ const AddJobPage = () => {
               </label>
               <textarea
                 id="description"
-                name="description"
                 className="border rounded w-full py-2 px-3"
                 rows={4}
                 placeholder="Add any job duties, expectations, requirements, etc"
                 value={job.description}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({
+                    fieldName: "description",
+                    value: e.target.value,
+                  });
+                }}
               ></textarea>
             </div>
 
@@ -130,11 +157,12 @@ const AddJobPage = () => {
               </label>
               <select
                 id="salary"
-                name="salary"
                 className="border rounded w-full py-2 px-3"
                 required
                 value={job.salary}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({ fieldName: "salary", value: e.target.value });
+                }}
               >
                 <option value="Under $50K">Under $50K</option>
                 <option value="$50K - 60K">$50K - $60K</option>
@@ -162,7 +190,12 @@ const AddJobPage = () => {
                 placeholder="Company Location"
                 required
                 value={job.location}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({
+                    fieldName: "location",
+                    value: e.target.value,
+                  });
+                }}
               />
             </div>
 
@@ -177,66 +210,86 @@ const AddJobPage = () => {
               </label>
               <input
                 type="text"
-                id="company"
-                name="company"
+                id="companyName"
                 className="border rounded w-full py-2 px-3"
                 placeholder="Company Name"
                 value={job.company.name}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({
+                    fieldName: "name",
+                    value: e.target.value,
+                    isCompanyField: true,
+                  });
+                }}
               />
             </div>
 
             <div className="mb-4">
               <label
-                htmlFor="company_description"
+                htmlFor="companyDescription"
                 className="block text-gray-700 font-bold mb-2"
               >
                 Company Description
               </label>
               <textarea
-                id="company_description"
-                name="company_description"
+                id="companyDescription"
                 className="border rounded w-full py-2 px-3"
                 rows={4}
                 placeholder="What does your company do?"
                 value={job.company.description}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({
+                    fieldName: "description",
+                    value: e.target.value,
+                    isCompanyField: true,
+                  });
+                }}
               ></textarea>
             </div>
 
             <div className="mb-4">
               <label
-                htmlFor="contact_email"
+                htmlFor="contactEmail"
                 className="block text-gray-700 font-bold mb-2"
               >
                 Contact Email
               </label>
               <input
                 type="email"
-                id="contact_email"
-                name="contact_email"
+                id="contactEmail"
                 className="border rounded w-full py-2 px-3"
                 placeholder="Email address for applicants"
                 required
                 value={job.company.contactEmail}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({
+                    fieldName: "contactEmail",
+                    value: e.target.value,
+                    isCompanyField: true,
+                  });
+                }}
               />
             </div>
             <div className="mb-4">
               <label
-                htmlFor="contact_phone"
+                htmlFor="contactPhone"
                 className="block text-gray-700 font-bold mb-2"
               >
                 Contact Phone
               </label>
               <input
                 type="tel"
-                id="contact_phone"
-                name="contact_phone"
+                id="contactPhone"
                 className="border rounded w-full py-2 px-3"
                 placeholder="Optional phone for applicants"
                 value={job.company.contactPhone}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange({
+                    fieldName: "contactPhone",
+                    value: e.target.value,
+                    isCompanyField: true,
+                  });
+                }}
               />
             </div>
 
