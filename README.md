@@ -39,7 +39,7 @@ Open your browser and navigate to http://localhost:3000 to view the application.
   - types/: TypeScript type definitions.
   - assets/: Static assets such as images.
 - public: Public assets and the index.html file.
-- `{}jobs.json`: JSON file used by JSON Server to sstore job data.
+- `{}jobs.json`: JSON file used by JSON Server to store job data.
 
 ## Acknowledgments
 
