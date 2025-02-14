@@ -40,3 +40,7 @@ Open your browser and navigate to http://localhost:3000 to view the application.
   - assets/: Static assets such as images.
 - public: Public assets and the index.html file.
 - `{}jobs.json`: JSON file used by JSON Server to sstore job data.
+
+## Acknowledgments
+
+Based on the project of Traversy Media: [React Crash Course 2024](https://youtu.be/LDB4uaJ87e0?feature=shared)
